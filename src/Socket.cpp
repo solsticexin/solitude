@@ -57,7 +57,7 @@ namespace solitude {
     // 用途：通过移动赋值转移套接字所有权，并处理旧资源释放。
     // 参数 other：被转移资源的源对象。
     Socket& Socket::operator= (Socket&& other)noexcept{
-        if (this == &other) {
+        if (this != &other) {
             if (fd_ != -1) {
                 // close(fd)
                 // 用途：在接管新 fd 前先关闭当前对象持有的旧 fd，避免文件描述符泄漏。

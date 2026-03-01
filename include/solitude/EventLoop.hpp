@@ -1,14 +1,17 @@
 #pragma once 
 #include <memory>
+// #include <map>
 // #include <vector>
 
 namespace solitude {
     //向前声明
     class Epoll;
     class Channel;
+
+     
     class EventLoop{
     private:
-        std::unique_ptr<Epoll> epoller_;
+        std::unique_ptr<Epoll> epoll_ptr_;
         bool quit_{false};
     public:
         EventLoop();

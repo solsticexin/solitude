@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <map>
 // #include <vector>
 
 namespace solitude {
@@ -12,6 +13,9 @@ namespace solitude {
         EventLoop* loop_;
         std::unique_ptr<Socket>serv_sock_;
         std::unique_ptr<Channel>serv_channel_;
+        // 文件资源描述符--linux一切皆文件
+        using fd = int;
+        std::map<fd,std::unique_ptr<Channel>> client_channels_;
     public:
         TcpServer(EventLoop* loop,const char* ip,uint16_t port);
         ~TcpServer();

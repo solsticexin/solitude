@@ -16,7 +16,7 @@ solitude::Epoll::Epoll():events_(64){
 
 namespace solitude {
     Epoll::~Epoll(){
-        if (epoll_fd_ == -1) {
+        if (epoll_fd_ != -1) {
             close(epoll_fd_);
         }
     }
