@@ -1,6 +1,7 @@
 #include "solitude/TcpServer.hpp"
 #include "solitude/EventLoop.hpp"
 #include "solitude/InetAddress.hpp"
+#include "solitude/TcpConnection.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -36,22 +37,29 @@ namespace solitude {
         InetAddress client_addr{};
         int client_fd {serv_sock_ ->accept(client_addr)};
         if (client_fd != -1) {
-            std::cout << std::format("TcpServer 监听到新连接:{},{}\n",client_addr.getIp(),client_addr.getPort());
-            auto client_ch {std::make_unique<Channel>(loop_,client_fd)};
-            client_ch->setReadCallBack([client_fd](){
-                char buf[1024];
-                ssize_t n = read(client_fd, buf, sizeof(buf));
-                if ( n>0) {
-                    std::cout << std::format("收到fd{}的数据，准备回传\n",client_fd);
-                    send(client_fd, buf, static_cast<size_t>(n), 0); //原样发回
-                }else if(n == 0){
-                    std::cout << std::format("clinet fd: {} 断开连接\n",client_fd);
-                    close(client_fd);
-                }
-            });
-
-            client_ch->enableReading();
-            client_channels_[client_fd] = std::move(client_ch);
+            std::cout << std::format("新链接:{},fd:{}\n",client_addr.getIp(),client_fd);
+            auto conn{std::make_unique<TcpConnection>(loop_,client_fd)};
+            connections_[client_fd] =std::move(conn);
         }
+        //被封装到Tcpconnection
+        //
+        // if (client_fd != -1) {
+        //     std::cout << std::format("TcpServer 监听到新连接:{},{}\n",client_addr.getIp(),client_addr.getPort());
+        //     auto client_ch {std::make_unique<Channel>(loop_,client_fd)};
+        //     client_ch->setReadCallBack([client_fd](){
+        //         char buf[1024];
+        //         ssize_t n = read(client_fd, buf, sizeof(buf));
+        //         if ( n>0) {
+        //             std::cout << std::format("收到fd{}的数据，准备回传\n",client_fd);
+        //             send(client_fd, buf, static_cast<size_t>(n), 0); //原样发回
+        //         }else if(n == 0){
+        //             std::cout << std::format("clinet fd: {} 断开连接\n",client_fd);
+        //             close(client_fd);
+        //         }
+        //     });
+        //
+        //     client_ch->enableReading();
+        //     client_channels_[client_fd] = std::move(client_ch);
+        // }
     }
 }

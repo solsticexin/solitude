@@ -64,6 +64,7 @@ set(SOLITUDE_HEADERS
     include/solitude/InetAddress.hpp
     include/solitude/Socket.hpp
     include/solitude/TcpServer.hpp
+    include/solitude/TcpConnection.hpp
 )
 
 set(SOLITUDE_SOURCES
@@ -73,6 +74,7 @@ set(SOLITUDE_SOURCES
     src/InetAddress.cpp
     src/Socket.cpp
     src/TcpServer.cpp
+    src/TcpConnection.cpp
 )
 
 # 使用库目标承载核心逻辑，可复用、可测试，也便于安装导出。
