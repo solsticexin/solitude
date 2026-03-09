@@ -1,0 +1,13 @@
+# Build outputs
+/build/
+/cmake-build-*/
+/bin/
+
+# CMake
+CMakeUserPresets.json
+
+# IDE
+/.idea/
+
+# OS
+.DS_Store
