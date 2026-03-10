@@ -26,10 +26,13 @@ if(NOT spdlog_FOUND)
 endif()
 
 add_library(eirian
-    src/Epoll.cpp
-    src/InetAddress.cpp
-    src/logger.cpp
-    src/socket.cpp
+        src/Epoll.cpp
+        src/InetAddress.cpp
+        src/logger.cpp
+        src/socket.cpp
+        src/Buffer.cpp
+        src/Channel.cpp
+        src/EventLoop.cpp
 )
 
 target_include_directories(eirian

@@ -49,6 +49,14 @@ namespace eirian {
         return *this;
     }
 
+    void Epoll::add(const int fd, const uint32_t events) const {
+        this->update(fd,events,EPOLL_CTL_ADD);
+    }
+
+    void Epoll::modify(const int fd, const uint32_t events) const {
+        this->update(fd,events,EPOLL_CTL_MOD);
+    }
+
     void Epoll::update(const int fd, const uint32_t events,const int op) const{
         epoll_event ev{};
         ev.events=events;
@@ -64,7 +72,7 @@ namespace eirian {
         }
     }
 
-    std::vector<epoll_event> Epoll::poll(const int timeout_ms) {
+    std::span<epoll_event> Epoll::poll(const int timeout_ms) {
         const int num_events{epoll_wait(
             this->epoll_fd_,
             this->epoll_events_.data(),
@@ -75,6 +83,10 @@ namespace eirian {
             if (errno == EINTR){return {};}
             throw std::system_error(errno,std::generic_category(),"epoll_wait failed");
         }
-        return {this->epoll_events_.begin(),this->epoll_events_.end()+num_events};
+        // 动态扩容逻辑（可选）
+        if (static_cast<size_t>(num_events) == this->epoll_events_.size()) {
+            this->epoll_events_.resize(this->epoll_events_.size() * 2);
+        }
+        return {this->epoll_events_.data(),static_cast<size_t>(num_events)};
     }
 } // eirian

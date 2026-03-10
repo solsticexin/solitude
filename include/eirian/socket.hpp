@@ -22,6 +22,11 @@ namespace eirian {
         [[nodiscard]] std::optional<Socket>  accept(InetAddress& client_addr) const;
         [[nodiscard]] bool setNonBlocking() const;
 
+        //返回接收到的字节数， 0表示对端关闭，-1 表示错误，send一样
+        [[nodiscard]] ssize_t receive(void* buf, int len ,int flags)const;
+        [[nodiscard]] ssize_t send(const void* buf, int len ,int flags)const;
+
+
         [[nodiscard]] int getFd() const noexcept { return socket_fd_; }
     };
 }

@@ -3,11 +3,23 @@
 /cmake-build-*/
 /bin/
 
-# CMake
+# CMake (in-source or tooling artifacts)
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/CTestTestfile.cmake
+/compile_commands.json
 CMakeUserPresets.json
+
+# JJ/Git metadata
+/.jj/
+/.git/
 
 # IDE
 /.idea/
+/.vscode/
 
-# OS
+# OS / editor
 .DS_Store
+*.swp
+*~
