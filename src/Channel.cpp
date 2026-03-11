@@ -30,4 +30,14 @@ namespace eirian{
         this->events_ |= EPOLLIN | EPOLLPRI;
         loop_->updateChannel(this);
     }
+
+    void Channel::enableWriting() {
+        this->events_ |= EPOLLOUT;
+        this->loop_->updateChannel(this);
+    }
+
+    void Channel::disableWriting() {
+        this->events_ &= ~EPOLLOUT;
+        this->loop_->updateChannel(this);
+    }
 }

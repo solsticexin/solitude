@@ -6,6 +6,7 @@
 #define EIRIAN_CHANNEL_HPP
 #include <cstdint>
 #include <functional>
+#include <sys/epoll.h>
 
 
 namespace eirian {
@@ -33,10 +34,17 @@ namespace eirian {
         // 开启监听可读事件
         void enableReading();
 
-        // 注册回调函数（提供给上层使用）
-        void setReadCallback(std::function<void()> cb) { readCallback_ = std::move(cb); }
-        void setCloseCallback(std::function<void()> cb) { closeCallback_ = std::move(cb); }
+        void enableWriting();
+        void disableWriting();
 
+        [[nodiscard]]bool isWriting()const {
+            return this->events_ & EPOLLOUT;
+        }
+
+        // 注册回调函数（提供给上层使用）
+        void setReadCallback(std::function<void()> cb) { this->readCallback_ = std::move(cb); }
+        void setCloseCallback(std::function<void()> cb) { this->closeCallback_ = std::move(cb); }
+        void setWriteCallback(std::function<void()>cb){this->writeCallback_=std::move(cb);}
         // 供 EventLoop 使用的接口
         [[nodiscard]] int getFd() const { return fd_; }
         [[nodiscard]]uint32_t getEvents() const { return events_; }

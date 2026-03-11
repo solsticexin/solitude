@@ -33,6 +33,8 @@ add_library(eirian
         src/Buffer.cpp
         src/Channel.cpp
         src/EventLoop.cpp
+        src/TcpConnection.cpp
+        src/TcpServer.cpp
 )
 
 target_include_directories(eirian

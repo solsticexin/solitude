@@ -17,11 +17,12 @@ namespace eirian {
         return this->buffer_.size();
     }
 
+    // 仅仅把前面的 len 个字节从水缸里删掉（表示这部分已经发给内核了）
     void Buffer::retrieve(const size_t len) {
-        if (len > this->buffer_.size()) {
-            this->buffer_.clear();
-        }else {
-            this->buffer_.erase(0,len);
+        if (len >= buffer_.size()) {
+            buffer_.clear();
+        } else {
+            buffer_.erase(0, len); // 擦除前 len 个字节
         }
     }
 

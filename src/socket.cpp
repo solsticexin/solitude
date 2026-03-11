@@ -93,11 +93,11 @@ namespace eirian {
         return fcntl(this->socket_fd_, F_SETFL, flag | O_NONBLOCK) != -1;
     }
 
-    ssize_t Socket::receive(void *buf, const int len, const int flags) const {
+    ssize_t Socket::receive(void *buf, const size_t len, const int flags) const {
         return ::recv(this->getFd(),buf,len,flags);
     }
 
-    ssize_t Socket::send(const void *buf, const int len,const  int flags) const {
+    ssize_t Socket::send(const void *buf, const size_t len,const  int flags) const {
         return ::send(this->socket_fd_,buf,len,flags);
     }
 }

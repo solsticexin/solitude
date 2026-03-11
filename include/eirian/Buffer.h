@@ -24,6 +24,10 @@ namespace eirian {
         void retrieve(size_t len);
 
         [[nodiscard]]std::string retrieveAllAsString();
+
+        [[nodiscard]] const char* peek() const {
+            return buffer_.data();
+        }
     };
 }
 
