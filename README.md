@@ -28,6 +28,52 @@ Epoll -> EventLoop -> Channel -> 业务回调
 默认单线程：`TcpServer` 使用主线程的 `EventLoop`。  
 开启线程池后：新连接会被轮询分配到某个 SubLoop（`EventLoopThreadPool::getNextLoop`）。
 
+## main.cpp 完整执行流程图
+以下流程对应 `main.cpp` 中 `main()` 的执行顺序（按源码实际构造/调用链展开）：
+
+```
+main()
+├── log::info("测试服务器开始")
+├── try
+│   ├── 构造 EventLoop loop
+│   │   └── 构造 Epoll epoll_（epoll_create1 创建 epoll_fd）
+│   ├── 构造 Socket server_socket
+│   │   └── ::socket(AF_INET, SOCK_STREAM, 0) 创建 fd
+│   ├── 构造 InetAddress addr("127.0.0.1", 8888)
+│   │   ├── 填充 sockaddr_in（AF_INET / htons / inet_pton）
+│   │   └── 记录 addr_len
+│   ├── server_socket.bind(addr)
+│   │   └── ::bind(fd, sockaddr_in)
+│   ├── server_socket.listen()
+│   │   ├── ::setsockopt(SO_REUSEADDR/REUSEPORT)
+│   │   └── ::listen(fd)
+│   ├── server_socket.setNonBlocking()
+│   │   └── fcntl(F_SETFL, O_NONBLOCK)
+│   ├── 构造 Channel server_channel(&loop, server_socket.getFd())
+│   ├── 设置 server_channel.readCallback
+│   │   └── 当 EPOLLIN 触发时：
+│   │       ├── server_socket.accept(client_addr)
+│   │       │   └── ::accept(fd)
+│   │       ├── 构造 Socket client_socket（接管 client_fd）
+│   │       ├── client_socket.setNonBlocking()
+│   │       ├── 记录 client_fd / 缓冲区 / Channel
+│   │       ├── 为 client_channel 设置 readCallback
+│   │       │   └── ::recv -> Buffer.append -> retrieveAllAsString
+│   │       │       └── ::send 回写（echo）
+│   │       └── client_channel.enableReading()
+│   │           └── EventLoop::updateChannel -> Epoll::add/modify
+│   ├── server_channel.enableReading()
+│   │   └── EventLoop::updateChannel -> Epoll::add/modify
+│   ├── log::info("EventLoop 发动机启动...")
+│   └── loop.loop()
+│       └── while (!quit_):
+│           ├── epoll_.poll(-1)
+│           ├── 遍历 active fd
+│           └── Channel::handleEvent -> 回调触发
+└── catch (std::exception)
+    └── log::error(...)
+```
+
 ## 构建
 要求：Linux、C++20、CMake 4.1+
 
